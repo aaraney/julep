@@ -82,6 +82,22 @@ func TestParseImageStr(t *testing.T) {
 	validation = Image{Name: "debian", Hash: "1234"}
 	assert_eq(input, validation)
 
+	input = "repo/debian"
+	validation = Image{Name: "debian", Registry: "repo"}
+	assert_eq(input, validation)
+
+	input = "repo/etc/etc/debian"
+	validation = Image{Name: "debian", Registry: "repo/etc/etc"}
+	assert_eq(input, validation)
+
+	input = "repo/etc/etc/debian:latest"
+	validation = Image{Name: "debian", Registry: "repo/etc/etc", Tag: "latest"}
+	assert_eq(input, validation)
+
+	input = "repo/etc/etc/debian@1234"
+	validation = Image{Name: "debian", Registry: "repo/etc/etc", Hash: "1234"}
+	assert_eq(input, validation)
+
 }
 
 func TestImageSource(t *testing.T) {
