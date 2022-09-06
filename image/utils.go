@@ -65,21 +65,30 @@ func parseImageSource(source string) string {
 // <image>
 // <image>[:<tag>]
 // <image>[@<digest>]
+// registry/etc/<image>
+// registry/etc/<image>[:<tag>]
+// registry/etc/<image>[@<digest>]
 func ParseImageStr(image string) Image {
+	var registry string
+
+	if i := strings.LastIndex(image, "/"); i > 0 && i < len(image)-1 {
+		registry = image[:i]
+		image = image[i+1:]
+	}
 
 	if i := strings.IndexRune(image, ':'); i > 0 && i < len(image)-1 {
 		name := image[:i]
 		tag := image[i+1:]
-		return Image{Name: name, Tag: tag}
+		return Image{Name: name, Tag: tag, Registry: registry}
 	}
 
 	if i := strings.IndexRune(image, '@'); i > 0 && i < len(image)-1 {
 		name := image[:i]
 		hash := image[i+1:]
-		return Image{Name: name, Hash: hash}
+		return Image{Name: name, Hash: hash, Registry: registry}
 	}
 
-	return Image{Name: image}
+	return Image{Name: image, Registry: registry}
 }
 
 func ImageSource(r io.Reader) (Image, error) {
