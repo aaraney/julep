@@ -9,7 +9,7 @@ import (
 func TestInsert(t *testing.T) {
 	i := make(ImageMap)
 	key := "source"
-	value := image.Image{Name: "target"}
+	value := DockerTermini{Image: image.Image{Name: "target"}}
 
 	i.Insert(key, value)
 	if i[key][0] != value {
@@ -29,7 +29,7 @@ func TestInsert(t *testing.T) {
 func TestExists(t *testing.T) {
 	i := make(ImageMap)
 	key := "source"
-	i[key] = []image.Image{{Name: "target"}}
+	i[key] = []DockerTermini{{Image: image.Image{Name: "target"}}}
 
 	if !i.Exists(key) {
 		t.Logf("key, %q, should exist in image map, %#v", key, i)
