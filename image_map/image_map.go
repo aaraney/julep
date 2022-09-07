@@ -7,9 +7,14 @@ import (
 // assumes that all image _names_ are unique.
 // image name does not include registry name.
 // so, `google/cadvisor`'s image name is `cadvisor`.
-type ImageMap map[string][]image.Image
+type ImageMap map[string][]DockerTermini
 
-func (m ImageMap) Insert(key string, images ...image.Image) {
+type DockerTermini struct {
+	Path string
+	image.Image
+}
+
+func (m ImageMap) Insert(key string, images ...DockerTermini) {
 	if !m.Exists(key) {
 		m[key] = images
 		return
