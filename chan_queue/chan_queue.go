@@ -50,7 +50,7 @@ func (q ChanQueue[T]) Pop() (T, error) {
 
 // pop an item from the queue in a one shot channel.
 // if queue is empty, "empty queue" error is present
-func (q ChanQueue[T]) PopOneshot() chan<- item[T] {
+func (q ChanQueue[T]) PopOneshot() <-chan item[T] {
 	// one shot channel
 	responseChan := make(chan item[T])
 	q.popChan <- responseChan
