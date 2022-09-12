@@ -48,6 +48,17 @@ func (q ChanQueue[T]) Pop() (T, error) {
 	return response.unpack()
 }
 
+// pop an item from the queue in a one shot channel.
+// if queue is empty, "empty queue" error is present
+func (q ChanQueue[T]) PopOneshot() chan<- item[T] {
+	// one shot channel
+	responseChan := make(chan item[T])
+	q.popChan <- responseChan
+
+	defer close(responseChan)
+	return responseChan
+}
+
 // NOT THREAD SAFE
 // should only be called in start
 func (q *ChanQueue[T]) pop() item[T] {
