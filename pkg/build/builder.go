@@ -11,6 +11,8 @@ import (
 	"github.com/docker/docker/pkg/archive"
 )
 
+// TODO: rethink this interface. need a way to send status updates and cancel a build. At face
+// value, I am thinking a status channel and a context.
 type Builder interface {
 	Build(job Job) error
 	Tag(job Job) error
