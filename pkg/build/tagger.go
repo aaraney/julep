@@ -1,6 +1,9 @@
 package build
 
-import "github.com/aaraney/inlet/image"
+import (
+	"github.com/aaraney/inlet/image"
+	"github.com/aaraney/inlet/pkg/utils"
+)
 
 type Tagger interface {
 	Tag(image.ImagePair) string
@@ -8,7 +11,22 @@ type Tagger interface {
 
 type DefaultTagger struct{}
 
+var (
+	tag    string
+	tagSet bool
+)
+
 func (DefaultTagger) Tag(img image.ImagePair) string {
-	// TODO: implement this
-	return "0.0.1"
+	if tagSet {
+		return tag
+	}
+
+	// NOTE: search location will likely be provided by config in future
+	hash, err := utils.GitHead(".")
+	if err != nil {
+		return tag
+	}
+	tag = hash
+	tagSet = true
+	return tag
 }
