@@ -22,7 +22,7 @@ func FindPredDir(initialPath, needle string) (string, error) {
 			return "", err
 		}
 
-		// binary search to find .git directory
+		// binary search to find needle directory
 		i := sort.Search(len(files), func(i int) bool { return files[i].Name() >= needle })
 
 		if i < len(files) && files[i].Name() == needle {
@@ -30,7 +30,7 @@ func FindPredDir(initialPath, needle string) (string, error) {
 			return filepath.Join(curAbsPath, needle), nil
 		} else {
 			if curAbsPath == "/" {
-				return "", errors.New("fatal: git repository not found (or any of the parent directories): .git")
+				return "", fmt.Errorf("directory not found (or any of the parent directories): %q", needle)
 			}
 			initialPath = "../" + initialPath
 		}
