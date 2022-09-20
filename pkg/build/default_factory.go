@@ -13,8 +13,8 @@ type DefaultJobFactory struct {
 	registry  string
 }
 
-func (f *DefaultJobFactory) JobsFromPaths(paths ...string) []DefaultJob {
-	var jobs []DefaultJob
+func (f *DefaultJobFactory) JobsFromPaths(paths ...string) []Job {
+	var jobs []Job
 
 	for _, path := range paths {
 		name := image.BuildName(path)
@@ -30,14 +30,14 @@ func (f *DefaultJobFactory) JobsFromPaths(paths ...string) []DefaultJob {
 	return jobs
 }
 
-func (f *DefaultJobFactory) GetChildren(img image.ImagePair) []DefaultJob {
+func (f *DefaultJobFactory) GetChildren(img image.ImagePair) []Job {
 	if !f.image_map.Exists(img.Name) {
-		return []DefaultJob{}
+		return []Job{}
 	}
 
 	children := f.image_map[img.Name]
 
-	jobs := make([]DefaultJob, len(children))
+	jobs := make([]Job, len(children))
 
 	for idx, child := range children {
 		jobs[idx] = DefaultJob{factory: f, image: child}

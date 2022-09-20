@@ -30,6 +30,6 @@ func (j DefaultJob) Tag() string {
 	return j.factory.GetTag(j.image)
 }
 
-func (j DefaultJob) Children() []DefaultJob {
+func (j DefaultJob) Children() []Job {
 	return j.factory.GetChildren(j.image)
 }
