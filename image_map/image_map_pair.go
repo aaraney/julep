@@ -37,13 +37,22 @@ func (m ImageMapPair) Exists(key string) bool {
 }
 
 func NewImageMapPair(rootDir string) ImageMapPair {
-	dockerfiles := make(chan string)
-
-	imgs := make(ImageMapPair)
-	wg := sync.WaitGroup{}
-
 	N_WORKERS := 4
 
+	wg := sync.WaitGroup{}
+
+	dockerfiles := make(chan string)
+	image_pairs := make(chan image.ImagePair)
+	imgs := make(ImageMapPair)
+
+	// writes to map
+	go func() {
+		for pair := range image_pairs {
+			imgs.InsertOne(pair)
+		}
+	}()
+
+	// sends pair to map writer
 	for i := 0; i < N_WORKERS; i++ {
 		wg.Add(1)
 		go func() {
@@ -57,7 +66,7 @@ func NewImageMapPair(rootDir string) ImageMapPair {
 				pair := image.NewImagePair(dockerfile, f)
 
 				f.Close()
-				imgs.InsertOne(pair)
+				image_pairs <- pair
 			}
 			wg.Done()
 		}()
@@ -66,6 +75,7 @@ func NewImageMapPair(rootDir string) ImageMapPair {
 
 	findDockerfiles(rootDir, dockerfiles)
 	wg.Wait()
+	close(image_pairs)
 	return imgs
 }
 
