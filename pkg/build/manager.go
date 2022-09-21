@@ -40,9 +40,21 @@ func (manager Manager) StartJobs(inputPaths ...Job) {
 			return
 		}
 
+		// fill workers with jobs
 		var idx int
 	loop:
 		for idx = 0; idx < len(buffer); idx++ {
+			// need to block until we can push first job
+			// without this, it is possible, although unlikely, that the below default select case
+			// is chosen instead of pushing a job from the buffer. this will result in a dead lock
+			// if in this iteration of the outer while loop, we pull the last result from the
+			// workers and no new work is pushed to them.
+			if idx == 0 {
+				manager.jobs <- buffer[idx]
+				activeJobs++
+				continue
+			}
+
 			select {
 			case manager.jobs <- buffer[idx]:
 				activeJobs++
