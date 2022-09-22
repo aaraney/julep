@@ -65,3 +65,63 @@ func (f *DefaultJobFactory) children(key string) []string {
 	return names
 }
 
+// modified BFS. returns paths such that none depend on one another.
+// example:
+//   DAG: a -> b -> c
+//   candidatesPaths("c", "a") -> ["a"]
+func (f *DefaultJobFactory) candidatesPaths(paths ...string) []string {
+	visited := set.NewSet[string]()
+	// name: path
+	candidates := make(map[string]string)
+
+	for _, candPath := range paths {
+		candName := image.BuildName(candPath)
+
+		// skip candidate name not in image_map
+		if !f.image_map.Exists(candName) {
+			// TODO: should log here
+			continue
+		}
+
+		// if visited, `candidate` is reachable from a predecessor startNode
+		if visited.In(candName) {
+			continue
+		}
+		visited.Add(candName)
+		candidates[candName] = candPath
+
+		children := f.children(candName)
+
+		for {
+			var toVisit []string
+
+			for _, child := range children {
+				if visited.In(child) {
+					// already reached
+					if _, ok := candidates[child]; ok {
+						delete(candidates, child)
+					}
+					continue
+				}
+
+				visited.Add(child)
+				toVisit = append(toVisit, f.children(child)...)
+			}
+			if len(toVisit) == 0 {
+				break
+			}
+			children = toVisit
+		}
+
+	}
+
+	candPaths := make([]string, len(candidates))
+
+	var i int
+	for _, v := range candidates {
+		candPaths[i] = v
+		i++
+	}
+
+	return candPaths
+}
