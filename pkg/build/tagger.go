@@ -1,8 +1,8 @@
 package build
 
 import (
-	"github.com/aaraney/inlet/pkg/image"
-	"github.com/aaraney/inlet/pkg/utils"
+	"github.com/aaraney/julep/pkg/image"
+	"github.com/aaraney/julep/pkg/utils"
 )
 
 type Tagger interface {

@@ -1,4 +1,4 @@
-module github.com/aaraney/inlet
+module github.com/aaraney/julep
 
 go 1.18
 

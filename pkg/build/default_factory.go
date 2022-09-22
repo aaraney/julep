@@ -3,9 +3,9 @@ package build
 import (
 	"fmt"
 
-	"github.com/aaraney/inlet/pkg/image"
-	"github.com/aaraney/inlet/pkg/image_map"
-	"github.com/aaraney/inlet/pkg/set"
+	"github.com/aaraney/julep/pkg/image"
+	"github.com/aaraney/julep/pkg/image_map"
+	"github.com/aaraney/julep/pkg/set"
 )
 
 type DefaultJobFactory struct {

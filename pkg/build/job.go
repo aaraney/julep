@@ -1,6 +1,6 @@
 package build
 
-import "github.com/aaraney/inlet/pkg/image"
+import "github.com/aaraney/julep/pkg/image"
 
 type Job interface {
 	// path to dockerfile

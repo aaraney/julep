@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aaraney/inlet/pkg/image"
+	"github.com/aaraney/julep/pkg/image"
 )
 
 type ImageMapPair map[string][]image.ImagePair

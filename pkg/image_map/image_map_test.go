@@ -3,7 +3,7 @@ package image_map
 import (
 	"testing"
 
-	"github.com/aaraney/inlet/pkg/image"
+	"github.com/aaraney/julep/pkg/image"
 )
 
 func TestInsert(t *testing.T) {

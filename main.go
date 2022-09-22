@@ -9,8 +9,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aaraney/inlet/pkg/image"
-	"github.com/aaraney/inlet/pkg/image_map"
+	"github.com/aaraney/julep/pkg/image"
+	"github.com/aaraney/julep/pkg/image_map"
 )
 
 func findDockerfiles(location string, dockerfiles chan<- string) {
