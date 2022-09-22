@@ -54,3 +54,14 @@ func (d DefaultJobFactory) GetFullName(img image.ImagePair) string {
 func (d *DefaultJobFactory) GetTag(img image.ImagePair) string {
 	return d.tagger.Tag(img)
 }
+
+func (f *DefaultJobFactory) children(key string) []string {
+	children := f.image_map.Children(key)
+	names := make([]string, len(children))
+
+	for i := 0; i < len(children); i++ {
+		names[i] = children[i].Name
+	}
+	return names
+}
+
