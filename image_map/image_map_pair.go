@@ -36,6 +36,13 @@ func (m ImageMapPair) Exists(key string) bool {
 	return ok
 }
 
+func (m ImageMapPair) Children(key string) []image.ImagePair {
+	if !m.Exists(key) {
+		return []image.ImagePair{}
+	}
+	return m[key]
+}
+
 func NewImageMapPair(rootDir string) ImageMapPair {
 	N_WORKERS := 4
 
