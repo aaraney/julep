@@ -5,6 +5,7 @@ import (
 
 	"github.com/aaraney/inlet/image"
 	"github.com/aaraney/inlet/image_map"
+	"github.com/aaraney/inlet/pkg/set"
 )
 
 type DefaultJobFactory struct {
