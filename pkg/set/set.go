@@ -22,3 +22,13 @@ func (s Set[T]) In(key T) bool {
 func (s Set[T]) Cardinality() int {
 	return len(s)
 }
+
+func (s Set[T]) AsSlice() []T {
+	ts := make([]T, len(s))
+	var i int
+	for k := range s {
+		ts[i] = k
+		i++
+	}
+	return ts
+}
