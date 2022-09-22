@@ -2,7 +2,7 @@ package set
 
 type Set[T comparable] map[T]struct{}
 
-func New[T comparable]() Set[T] {
+func NewSet[T comparable]() Set[T] {
 	return make(Set[T])
 }
 
