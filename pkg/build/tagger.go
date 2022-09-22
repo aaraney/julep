@@ -1,7 +1,7 @@
 package build
 
 import (
-	"github.com/aaraney/inlet/image"
+	"github.com/aaraney/inlet/pkg/image"
 	"github.com/aaraney/inlet/pkg/utils"
 )
 

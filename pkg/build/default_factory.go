@@ -3,8 +3,8 @@ package build
 import (
 	"fmt"
 
-	"github.com/aaraney/inlet/image"
-	"github.com/aaraney/inlet/image_map"
+	"github.com/aaraney/inlet/pkg/image"
+	"github.com/aaraney/inlet/pkg/image_map"
 	"github.com/aaraney/inlet/pkg/set"
 )
 
