@@ -45,10 +45,16 @@ func NewImageMapPair(rootDir string) ImageMapPair {
 	image_pairs := make(chan image.ImagePair)
 	imgs := make(ImageMapPair)
 
+	done := make(chan bool)
 	// writes to map
 	go func() {
-		for pair := range image_pairs {
-			imgs.InsertOne(pair)
+		for {
+			select {
+			case pair := <-image_pairs:
+				imgs.InsertOne(pair)
+			case <-done:
+				return
+			}
 		}
 	}()
 
@@ -75,7 +81,7 @@ func NewImageMapPair(rootDir string) ImageMapPair {
 
 	findDockerfiles(rootDir, dockerfiles)
 	wg.Wait()
-	close(image_pairs)
+	done <- true
 	return imgs
 }
 
