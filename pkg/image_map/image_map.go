@@ -1,7 +1,7 @@
 package image_map
 
 import (
-	"github.com/aaraney/inlet/image"
+	"github.com/aaraney/inlet/pkg/image"
 )
 
 // assumes that all image _names_ are unique.
