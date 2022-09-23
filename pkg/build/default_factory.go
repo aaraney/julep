@@ -15,19 +15,16 @@ type DefaultJobFactory struct {
 }
 
 func (f *DefaultJobFactory) JobsFromPaths(paths ...string) []Job {
-	var jobs []Job
+	candidatePaths := f.candidatesPaths(paths...)
+	jobs := make([]Job, len(candidatePaths))
 
-	for _, path := range paths {
+	for i, path := range candidatePaths {
 		name := image.BuildName(path)
 
-		if !f.image_map.Exists(name) {
-			// TODO: should log here
-			continue
-		}
-
 		// TODO: refactor this. wayyy too much coupling
-		jobs = append(jobs, DefaultJob{factory: f, image: image.ImagePair{Name: name, Path: path}})
+		jobs[i] = DefaultJob{factory: f, image: image.ImagePair{Name: name, Path: path}}
 	}
+
 	return jobs
 }
 
