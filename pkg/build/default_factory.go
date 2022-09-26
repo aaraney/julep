@@ -44,9 +44,13 @@ func (f *DefaultJobFactory) GetChildren(img image.ImagePair) []Job {
 	return jobs
 }
 
+// GetFullName returns the registry concatenated to the image name (i.e. {{registry/name}} ). if a
+// registry is not present, only the image name is returned.
 func (d DefaultJobFactory) GetFullName(img image.ImagePair) string {
+	if d.registry == "" {
+		return img.Name
+	}
 	return fmt.Sprintf("%s/%s", d.registry, img.Name)
-
 }
 
 func (d *DefaultJobFactory) GetTag(img image.ImagePair) string {
