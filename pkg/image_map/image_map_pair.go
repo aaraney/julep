@@ -76,7 +76,14 @@ func NewImageMapPair(rootDir string) ImageMapPair {
 					continue
 				}
 
-				pair := image.NewImagePair(dockerfile, f)
+				// TODO: refactor into function in `image` package.
+				rel_path, _ := filepath.Rel(rootDir, dockerfile)
+				source, _ := image.ImageSource(f)
+				pair := image.ImagePair{
+					Name:        image.BuildName(rel_path),
+					Path:        dockerfile,
+					SourceImage: source,
+				}
 
 				f.Close()
 				image_pairs <- pair
