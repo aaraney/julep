@@ -49,17 +49,21 @@ func (m MockDoer) Cancel(sleep_time int) {
 func TestWorkerShim(t *testing.T) {
 	cancel := make(chan chan struct{})
 	jobs := make(chan int)
+	results := make(chan CompletedJob[int])
 
 	workers := 5
 
 	for i := 0; i < workers; i++ {
 		doer := NewMockDoer()
-		go WorkerShim[int](doer, jobs, cancel)
+		go WorkerShim[int](doer, jobs, results, cancel)
 	}
 
 	go func() {
 		for {
-			jobs <- rand.Intn(150) + 50
+			select {
+			case jobs <- rand.Intn(150) + 50:
+			case <-results:
+			}
 		}
 	}()
 
