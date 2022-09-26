@@ -2,7 +2,7 @@ package build
 
 type Manager struct {
 	jobs     chan<- Job
-	progress <-chan JobStatus
+	progress <-chan CompletedJob[Job]
 }
 
 func (manager Manager) StartJobs(inputPaths ...Job) {
@@ -32,7 +32,7 @@ func (manager Manager) StartJobs(inputPaths ...Job) {
 			// implicitly prune
 			// TODO: add do some alerting here
 		} else {
-			buffer = append(buffer, p.Children()...)
+			buffer = append(buffer, p.Job.Children()...)
 		}
 
 		if activeJobs == 0 && len(buffer) == 0 {
