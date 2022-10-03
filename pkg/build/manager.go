@@ -5,6 +5,13 @@ type Manager struct {
 	progress <-chan CompletedJob[Job]
 }
 
+func NewManager() Manager {
+	jobs := make(chan Job)
+	progress := make(chan CompletedJob[Job])
+
+	return Manager{jobs: jobs, progress: progress}
+}
+
 func (manager Manager) StartJobs(inputPaths ...Job) {
 	if len(inputPaths) == 0 {
 		// no jobs
