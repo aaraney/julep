@@ -1,8 +1,8 @@
 package build
 
 type Manager struct {
-	jobs     chan<- Job
-	progress <-chan CompletedJob[Job]
+	jobs     chan Job
+	progress chan CompletedJob[Job]
 }
 
 func NewManager() Manager {
