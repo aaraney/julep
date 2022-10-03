@@ -74,3 +74,32 @@ func (manager Manager) StartJobs(inputPaths ...Job) {
 	}
 
 }
+
+func (m Manager) StartBuilders(n_builders int, builder Doer[Job]) []chan chan struct{} {
+	cancelers := make([]chan chan struct{}, n_builders)
+
+	for i := 0; i < n_builders; i++ {
+		cancel := make(chan chan struct{})
+		cancelers[i] = cancel
+
+		// start builders
+		go WorkerShim(builder, m.jobs, m.progress, cancel)
+	}
+
+	return cancelers
+}
+
+func (Manager) CancelBuilders(cancelers []chan chan struct{}) {
+	wg := sync.WaitGroup{}
+	for i, cancel := range cancelers {
+		wg.Add(1)
+
+		go func(i int, cancel chan chan struct{}) {
+			defer wg.Done()
+			c := make(chan struct{})
+			cancel <- c
+			<-c
+		}(i, cancel)
+	}
+	wg.Wait()
+}
