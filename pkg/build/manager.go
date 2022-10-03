@@ -1,5 +1,7 @@
 package build
 
+import "sync"
+
 type Manager struct {
 	jobs     chan Job
 	progress chan CompletedJob[Job]
