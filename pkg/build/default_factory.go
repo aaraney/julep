@@ -14,6 +14,14 @@ type DefaultJobFactory struct {
 	registry  string
 }
 
+func NewDefaultJobFactory(image_map image_map.ImageMapPair, tagger Tagger, registry string) *DefaultJobFactory {
+	return &DefaultJobFactory{
+		image_map: image_map,
+		tagger:    tagger,
+		registry:  registry,
+	}
+}
+
 func (f *DefaultJobFactory) JobsFromPaths(paths ...string) []Job {
 	candidatePaths := f.candidatesPaths(paths...)
 	jobs := make([]Job, len(candidatePaths))
