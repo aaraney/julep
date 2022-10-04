@@ -6,7 +6,7 @@ type Doer[T any] interface {
 }
 
 func WorkerShim[T any](doer Doer[T], jobs <-chan T, done_jobs chan<- CompletedJob[T], cancel chan chan struct{}) {
-	done := make(chan struct{}, 1)
+	done := make(chan error, 1)
 
 	for {
 		select {
@@ -15,17 +15,17 @@ func WorkerShim[T any](doer Doer[T], jobs <-chan T, done_jobs chan<- CompletedJo
 
 			// start job in background
 			go func(job T) {
-				defer func() { done <- struct{}{} }()
-				doer.Do(job)
+				var err error
+				defer func() { done <- err }()
+				err = doer.Do(job)
 			}(job)
 
 			// wait for the job to be done
 			// or
 			// cancel signal
 			select {
-			case <-done:
-				// TODO: handle job errors
-				done_jobs <- CompletedJob[T]{Job: job, Err: nil}
+			case err := <-done:
+				done_jobs <- CompletedJob[T]{Job: job, Err: err}
 
 			// job is in progress
 			case c := <-cancel:
