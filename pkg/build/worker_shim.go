@@ -1,8 +1,7 @@
 package build
 
-// TODO rework interface to incorporate errors
 type Doer[T any] interface {
-	Do(T)
+	Do(T) error
 	Cancel(T)
 }
 
