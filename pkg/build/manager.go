@@ -1,6 +1,9 @@
 package build
 
-import "sync"
+import (
+	"context"
+	"sync"
+)
 
 type Manager struct {
 	jobs     chan Job
@@ -14,7 +17,7 @@ func NewManager() Manager {
 	return Manager{jobs: jobs, progress: progress}
 }
 
-func (manager Manager) StartJobs(inputPaths ...Job) {
+func (manager Manager) StartJobs(ctx context.Context, inputPaths ...Job) {
 	if len(inputPaths) == 0 {
 		// no jobs
 		return
@@ -25,6 +28,8 @@ func (manager Manager) StartJobs(inputPaths ...Job) {
 
 	for _, job := range inputPaths {
 		select {
+		case <-ctx.Done():
+			return
 		// add job
 		case manager.jobs <- job:
 			activeJobs++
@@ -35,44 +40,54 @@ func (manager Manager) StartJobs(inputPaths ...Job) {
 
 	// based on progress, either add jobs or prunes
 	for {
-		p := <-manager.progress
-		activeJobs--
-		if !p.Ok() {
-			// implicitly prune
-			// TODO: add do some alerting here
-		} else {
-			buffer = append(buffer, p.Job.Children()...)
-		}
-
-		if activeJobs == 0 && len(buffer) == 0 {
-			// done
+		select {
+		case <-ctx.Done():
 			return
-		}
-
-		// fill workers with jobs
-		var idx int
-	loop:
-		for idx = 0; idx < len(buffer); idx++ {
-			// need to block until we can push first job
-			// without this, it is possible, although unlikely, that the below default select case
-			// is chosen instead of pushing a job from the buffer. this will result in a dead lock
-			// if in this iteration of the outer while loop, we pull the last result from the
-			// workers and no new work is pushed to them.
-			if idx == 0 {
-				manager.jobs <- buffer[idx]
-				activeJobs++
-				continue
+		case p := <-manager.progress:
+			activeJobs--
+			if !p.Ok() {
+				// implicitly prune
+				// TODO: add do some alerting here
+			} else {
+				buffer = append(buffer, p.Job.Children()...)
 			}
 
-			select {
-			case manager.jobs <- buffer[idx]:
-				activeJobs++
-			default:
-				break loop
+			if activeJobs == 0 && len(buffer) == 0 {
+				// done
+				return
 			}
-		}
 
-		buffer = buffer[idx:]
+			// fill workers with jobs
+			var idx int
+		loop:
+			for idx = 0; idx < len(buffer); idx++ {
+				// need to block until we can push first job
+				// without this, it is possible, although unlikely, that the below default select case
+				// is chosen instead of pushing a job from the buffer. this will result in a dead lock
+				// if in this iteration of the outer while loop, we pull the last result from the
+				// workers and no new work is pushed to them.
+				if idx == 0 {
+					select {
+					case <-ctx.Done():
+						return
+					case manager.jobs <- buffer[idx]:
+						activeJobs++
+						continue
+					}
+				}
+
+				select {
+				case <-ctx.Done():
+					return
+				case manager.jobs <- buffer[idx]:
+					activeJobs++
+				default:
+					break loop
+				}
+			}
+
+			buffer = buffer[idx:]
+		}
 	}
 
 }
