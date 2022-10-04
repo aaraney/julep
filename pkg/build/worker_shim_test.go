@@ -23,7 +23,7 @@ func (m MockDoer) reset() {
 	}
 }
 
-func (m MockDoer) Do(sleep_time int) {
+func (m MockDoer) Do(sleep_time int) error {
 	m.reset()
 
 	select {
@@ -33,6 +33,7 @@ func (m MockDoer) Do(sleep_time int) {
 	case <-m.stop:
 		fmt.Println("stopped")
 	}
+	return nil
 }
 
 func (m MockDoer) Cancel(sleep_time int) {
