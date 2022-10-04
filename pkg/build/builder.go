@@ -41,6 +41,7 @@ func (DefaultBuilder) Build(job Job) error {
 	img_opts := types.ImageBuildOptions{
 		Tags:       []string{job.FullName()},
 		Dockerfile: dockerfile,
+		BuildID:    job.FullName(),
 	}
 
 	res, err := cli.ImageBuild(context.Background(), getContext(ctx), img_opts)
