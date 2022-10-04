@@ -77,7 +77,7 @@ func (manager Manager) StartJobs(inputPaths ...Job) {
 
 }
 
-func (m Manager) StartBuilders(n_builders int, builder Doer[Job]) []chan chan struct{} {
+func (m Manager) StartBuilders(builder Doer[Job], n_builders int) []chan chan struct{} {
 	cancelers := make([]chan chan struct{}, n_builders)
 
 	for i := 0; i < n_builders; i++ {
