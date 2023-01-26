@@ -26,7 +26,19 @@ func (manager Manager) StartJobs(ctx context.Context, inputPaths ...Job) {
 	var buffer []Job
 	var activeJobs int
 
-	for _, job := range inputPaths {
+    // block until first job has pushed job onto jobs channel or exit if context is done.
+    // must block because if default case was provided in select block, it is possible that no jobs
+    // are pushed to jobs channel. either b.c. no one is receiving or the they are receiving but
+    // they are in a thread that is asleep. this would result in a deadlock.
+	select {
+	case <-ctx.Done():
+		return
+	// add job
+	case manager.jobs <- inputPaths[0]:
+		activeJobs++
+	}
+
+	for _, job := range inputPaths[1:] {
 		select {
 		case <-ctx.Done():
 			return
@@ -65,7 +77,7 @@ func (manager Manager) StartJobs(ctx context.Context, inputPaths ...Job) {
 				// without this, it is possible, although unlikely, that the below default select case
 				// is chosen instead of pushing a job from the buffer. this will result in a dead lock
 				// if in this iteration of the outer while loop, we pull the last result from the
-				// workers and no new work is pushed to them.
+				// workers and no new work is pushed to the workers.
 				if idx == 0 {
 					select {
 					case <-ctx.Done():
